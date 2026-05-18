@@ -98,7 +98,9 @@ Observed metrics on the 20-question local evaluation set:
   "total_questions": 20,
   "retrieval_hit_rate": 1.0,
   "citation_presence_rate": 1.0,
+  "citation_correctness_rate": 1.0,
   "refusal_accuracy": 1.0,
+  "unsupported_answer_rate": 0.0,
   "groundedness_rate": 1.0
 }
 ```
@@ -106,7 +108,9 @@ Observed metrics on the 20-question local evaluation set:
 What this means:
 - Retrieval found the expected source document across the full evaluation set.
 - Every answerable response included citations.
+- Every answerable response cited the expected supporting document under the evaluator's citation-correctness heuristic.
 - The agent correctly answered supported questions and refused unsupported ones.
+- The system produced zero unsupported answers on the evaluation set.
 - The groundedness heuristic marked all outputs as supported by retrieved context.
 
 ## Healthcare-Safety Lens
