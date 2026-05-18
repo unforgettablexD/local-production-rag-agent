@@ -113,11 +113,11 @@ What this means:
 - The system produced zero unsupported answers on the evaluation set.
 - The groundedness heuristic marked all outputs as supported by retrieved context.
 
-## Healthcare-Safety Lens
+## Safety Lens
 
-For healthcare-oriented AI teams, generic RAG metrics are helpful but not sufficient. The most important question is whether the system abstains safely when it lacks support and whether every factual response is traceable to evidence.
+For Safety-oriented AI teams, generic RAG metrics are helpful but not sufficient. The most important question is whether the system abstains safely when it lacks support and whether every factual response is traceable to evidence.
 
-Recommended healthcare-aligned metrics for this project:
+Recommended safety-aligned metrics for this project:
 - `retrieval_hit_rate`: Did retrieval surface the expected supporting document?
 - `citation_correctness_rate`: Did the cited chunk actually support the answer?
 - `unsupported_answer_rate`: How often did the system answer when it should have refused?
@@ -136,8 +136,8 @@ What would need explicit recalculation or evaluator extensions:
 - `citation_correctness_rate` currently uses a lightweight heuristic; a stricter claim-level check would be a logical next production improvement.
 - `human_handoff_recommended_rate` would require introducing an explicit escalation label in the evaluator.
 
-Why this matters for healthcare AI:
-- In healthcare-adjacent workflows, safe abstention is often more important than answer completeness.
+Why this matters for safety-first AI:
+- In safety-first-adjacent workflows, safe abstention is often more important than answer completeness.
 - Evidence traceability is critical for review, clinician oversight, and operational trust.
 - A system that refuses appropriately is safer than one that answers fluently without support.
 
