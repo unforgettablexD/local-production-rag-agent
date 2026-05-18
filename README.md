@@ -4,9 +4,10 @@ A portfolio-grade local Retrieval-Augmented Generation project that demonstrates
 
 ## Demo Video
 
-- [Watch the local demo video](./media/rag-demo.mp4)
+- [Watch the demo on YouTube](https://youtu.be/TtTDfIjgCQI)
+- [Local backup video](./media/rag-demo.mp4)
 
-If GitHub does not preview the video inline in your browser, open the file directly from the repository.
+GitHub does not reliably support embedded YouTube players inside `README.md`, so the best recruiter-friendly approach is a prominent YouTube link plus an optional local backup video in the repository.
 
 ## What This Project Demonstrates
 - Production-style RAG pipeline with ingestion, chunking, embeddings, retrieval, generation, verification, and evaluation.
