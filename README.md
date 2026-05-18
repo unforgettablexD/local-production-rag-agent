@@ -205,28 +205,6 @@ curl -X POST "http://localhost:8000/evaluate" ^
 - If Qdrant is unavailable, rerun `docker compose up --build` and confirm port `6333` is free.
 - If Docker on Linux cannot reach Ollama, replace `host.docker.internal` with your host IP in `.env`.
 
-## Interview Demo Script
-
-### What to Say
-1. "This project is a production-style local RAG agent that indexes enterprise documents, retrieves relevant evidence, and answers questions with explicit citations."
-2. "I used FastAPI for the backend contract, Streamlit for the demo UI, Ollama for fully local model execution, and Qdrant for vector search."
-3. "The ingestion flow extracts text from PDFs, DOCX, text, and Markdown, chunks the content, creates embeddings locally, and stores both vectors and metadata in Qdrant."
-4. "At query time, the agent decides whether retrieval is needed, rewrites the query, retrieves top-k chunks, generates an answer only from the retrieved context, and verifies that the final answer is grounded."
-5. "Citations are attached directly to retrieved chunk IDs, which makes it easy to inspect exactly why the model answered the way it did."
-6. "Hallucination is reduced in three ways: retrieval-only prompting, refusal when evidence is missing, and a grounding verifier that rejects unsupported answers."
-7. "I also included an evaluation harness with answerable and unanswerable questions, plus metrics for retrieval hit rate, citation presence, refusal accuracy, and groundedness."
-8. "In a larger production deployment, I would add auth, background ingestion jobs, richer observability, reranking, hybrid search, and stronger automated evaluation."
-9. "On my current local setup, the fast evaluation mode hits 1.0 on retrieval hit rate, citation presence, refusal accuracy, and groundedness for the curated demo subset."
-
-### Demo Walkthrough
-1. Open the Streamlit app and point out backend health.
-2. Upload the sample docs or run `make ingest-samples`.
-3. Ask an answerable policy question and show the cited answer plus retrieved chunks.
-4. Ask an unanswerable question and show the refusal behavior.
-5. Open the summarization tab and summarize one document.
-6. Open the comparison tab and compare two policies.
-7. Run the evaluation tab and explain the metrics.
-8. Open the FastAPI docs and mention how the API can support other frontends.
 
 ## Production Improvements
 - Add authentication and RBAC.
