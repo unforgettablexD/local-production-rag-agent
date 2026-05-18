@@ -77,7 +77,7 @@ local-production-rag-agent/
 
 ### Evaluation
 - Includes 20 evaluation questions across answerable and unanswerable cases.
-- Reports retrieval hit rate, citation presence rate, refusal accuracy, and groundedness rate.
+- Reports retrieval hit rate, citation presence rate, citation correctness rate, refusal accuracy, unsupported answer rate, and groundedness rate.
 - Emphasizes safe refusal and evidence-backed answers for local production RAG workflows.
 
 ## Latest Results
@@ -125,11 +125,11 @@ How the current repo maps to those concepts:
 - `retrieval_hit_rate` is already reported directly.
 - `refusal_accuracy` is already reported directly.
 - `groundedness_rate` is the current proxy for `evidence_alignment_rate`.
-- `citation_presence_rate` is currently reported; this is weaker than `citation_correctness_rate` but still useful.
+- `citation_presence_rate` and `citation_correctness_rate` are both reported.
+- `unsupported_answer_rate` is now reported directly for the unsupported-query subset.
 
 What would need explicit recalculation or evaluator extensions:
-- `citation_correctness_rate` would require checking whether the cited chunk actually supports the specific claim, not just whether a citation exists.
-- `unsupported_answer_rate` can be derived from the unanswerable subset but is not currently surfaced as its own headline metric.
+- `citation_correctness_rate` currently uses a lightweight heuristic; a stricter claim-level check would be a logical next production improvement.
 - `human_handoff_recommended_rate` would require introducing an explicit escalation label in the evaluator.
 
 Why this matters for healthcare AI:

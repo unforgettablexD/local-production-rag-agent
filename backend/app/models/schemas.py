@@ -96,7 +96,9 @@ class EvaluationMetrics(BaseModel):
     total_questions: int
     retrieval_hit_rate: float
     citation_presence_rate: float
+    citation_correctness_rate: float
     refusal_accuracy: float
+    unsupported_answer_rate: float
     groundedness_rate: float
 
 
@@ -107,8 +109,10 @@ class EvaluationCaseResult(BaseModel):
     actual_answer: str
     refusal: bool
     citation_present: bool
+    citation_correct: bool
     retrieval_hit: bool
     grounded: bool
+    unsupported_answer: bool
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

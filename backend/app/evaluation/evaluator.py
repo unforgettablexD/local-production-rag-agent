@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from app.agent.rag_agent import RAGAgent
@@ -52,6 +53,15 @@ class Evaluator:
             expected_source = case.get("expected_source_document")
             cited_documents = {citation.filename for citation in response.citations}
             retrieved_documents = {chunk.filename for chunk in response.retrieved_chunks}
+            citation_correct = self._is_citation_correct(
+                expected_behavior=case["expected_behavior"],
+                expected_source=expected_source,
+                actual_answer=response.answer,
+                cited_documents=cited_documents,
+            )
+            unsupported_answer = (
+                case["expected_behavior"] == "refuse" and not response.refusal
+            )
             results.append(
                 EvaluationCaseResult(
                     question=case["question"],
@@ -60,10 +70,12 @@ class Evaluator:
                     actual_answer=response.answer,
                     refusal=response.refusal,
                     citation_present=bool(response.citations),
+                    citation_correct=citation_correct,
                     retrieval_hit=(expected_source in retrieved_documents)
                     if expected_source
                     else response.refusal,
                     grounded=response.answer == REFUSAL_MESSAGE or bool(cited_documents),
+                    unsupported_answer=unsupported_answer,
                     metadata={
                         "retrieved_documents": sorted(retrieved_documents),
                         "cited_documents": sorted(cited_documents),
@@ -72,6 +84,8 @@ class Evaluator:
             )
 
         total = len(results) or 1
+        answerable_count = max(1, sum(result.expected_behavior == "answer" for result in results))
+        refusal_count = max(1, sum(result.expected_behavior == "refuse" for result in results))
         metrics = EvaluationMetrics(
             total_questions=len(results),
             retrieval_hit_rate=sum(result.retrieval_hit for result in results) / total,
@@ -81,7 +95,15 @@ class Evaluator:
                     for result in results
                     if result.expected_behavior == "answer"
                 )
-                / max(1, sum(result.expected_behavior == "answer" for result in results))
+                / answerable_count
+            ),
+            citation_correctness_rate=(
+                sum(
+                    result.citation_correct
+                    for result in results
+                    if result.expected_behavior == "answer"
+                )
+                / answerable_count
             ),
             refusal_accuracy=sum(
                 (
@@ -92,6 +114,35 @@ class Evaluator:
                 for result in results
             )
             / total,
+            unsupported_answer_rate=(
+                sum(result.unsupported_answer for result in results) / refusal_count
+            ),
             groundedness_rate=sum(result.grounded for result in results) / total,
         )
         return EvaluationResponse(metrics=metrics, results=results)
+
+    @staticmethod
+    def _is_citation_correct(
+        expected_behavior: str,
+        expected_source: str | None,
+        actual_answer: str,
+        cited_documents: set[str],
+    ) -> bool:
+        if expected_behavior == "refuse":
+            return actual_answer.strip() == REFUSAL_MESSAGE
+        if not cited_documents or not expected_source:
+            return False
+        if expected_source not in cited_documents:
+            return False
+        # Lightweight claim check: treat clearly analytical/non-final text as weaker citation quality.
+        analysis_markers = (
+            "the context",
+            "the relevant part",
+            "mention the same",
+            "chunks [",
+            "from the ",
+        )
+        lowered = actual_answer.lower()
+        if any(marker in lowered for marker in analysis_markers):
+            return False
+        return bool(re.search(r"\[\d+\]", actual_answer))
