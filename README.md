@@ -2,6 +2,12 @@
 
 A portfolio-grade local Retrieval-Augmented Generation project that demonstrates a production-style RAG agent running fully on a developer laptop. It combines a FastAPI backend, Streamlit frontend, Ollama-hosted local models, and Qdrant vector search to deliver grounded answers with citations, refusals, document ingestion, and evaluation.
 
+## Demo Video
+
+- [Watch the local demo video](./media/rag-demo.mp4)
+
+If GitHub does not preview the video inline in your browser, open the file directly from the repository.
+
 ## What This Project Demonstrates
 - Production-style RAG pipeline with ingestion, chunking, embeddings, retrieval, generation, verification, and evaluation.
 - Local LLM usage through Ollama with `qwen3:8b` for generation and `nomic-embed-text` for embeddings.
