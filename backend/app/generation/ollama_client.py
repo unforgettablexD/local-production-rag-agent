@@ -34,6 +34,7 @@ class OllamaClient:
     @staticmethod
     def _sanitize_response(text: str) -> str:
         cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE).strip()
+        cleaned = re.sub(r"</think>", "", cleaned, flags=re.IGNORECASE).strip()
         if cleaned and "<think>" not in cleaned.lower():
             text = cleaned
 
@@ -68,6 +69,7 @@ class OllamaClient:
             flags=re.IGNORECASE,
         ).strip()
         text = re.sub(r'^"(.+)"\s+That seems$', r"\1", text, flags=re.IGNORECASE)
+        text = re.sub(r"</think>", "", text, flags=re.IGNORECASE)
         text = re.sub(r"\s+", " ", text).strip()
 
         if text.lower().startswith("answer:"):

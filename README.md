@@ -81,8 +81,34 @@ local-production-rag-agent/
 
 ## Latest Results
 
-### Fast Evaluation Snapshot
+### Full Evaluation Snapshot
 Run date: `2026-05-17`
+
+Command:
+
+```bash
+make eval
+```
+
+Observed metrics on the 20-question local evaluation set:
+
+```json
+{
+  "total_questions": 20,
+  "retrieval_hit_rate": 1.0,
+  "citation_presence_rate": 1.0,
+  "refusal_accuracy": 1.0,
+  "groundedness_rate": 1.0
+}
+```
+
+What this means:
+- Retrieval found the expected source document across the full evaluation set.
+- Every answerable response included citations.
+- The agent correctly answered supported questions and refused unsupported ones.
+- The groundedness heuristic marked all outputs as supported by retrieved context.
+
+### Fast Evaluation Snapshot
 
 Command:
 
@@ -108,7 +134,7 @@ What this means:
 - The agent correctly answered or refused for all fast-eval questions in that run.
 - The groundedness heuristic marked all fast-eval outputs as supported.
 
-Note: `make eval-fast` is the recommended interview/demo benchmark because it reflects the real pipeline while keeping latency practical on local hardware.
+Note: `make eval-fast` is still the recommended interview/demo benchmark because it reflects the real pipeline while keeping latency practical on local hardware, while `make eval` provides the full 20-question benchmark.
 
 ## API Endpoints
 - `GET /health`

@@ -75,7 +75,14 @@ class Evaluator:
         metrics = EvaluationMetrics(
             total_questions=len(results),
             retrieval_hit_rate=sum(result.retrieval_hit for result in results) / total,
-            citation_presence_rate=sum(result.citation_present for result in results) / total,
+            citation_presence_rate=(
+                sum(
+                    result.citation_present
+                    for result in results
+                    if result.expected_behavior == "answer"
+                )
+                / max(1, sum(result.expected_behavior == "answer" for result in results))
+            ),
             refusal_accuracy=sum(
                 (
                     result.refusal

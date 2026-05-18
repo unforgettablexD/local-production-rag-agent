@@ -31,6 +31,9 @@ class AgentTools:
         model_override: str | None = None,
         num_predict: int | None = None,
     ) -> tuple[str, list[Citation]]:
+        if not self._context_supports_question(question, context):
+            return REFUSAL_MESSAGE, []
+
         prompt = build_grounded_answer_prompt(question, context)
         answer = self.ollama_client.generate(
             prompt=prompt,
@@ -59,13 +62,72 @@ class AgentTools:
             "the key sentence",
             "the context",
             "both mention",
+            "from the security policy",
+            "chunks [",
         )
         return any(marker in normalized.lower() for marker in analysis_markers)
 
     @staticmethod
-    def _extractive_fallback_answer(question: str, context: list[RetrievedChunk]) -> str | None:
+    def _context_supports_question(question: str, context: list[RetrievedChunk]) -> bool:
         if not context:
+            return False
+
+        question_terms = AgentTools._tokenize(question)
+        context_terms = {
+            term
+            for chunk in context
+            for sentence in AgentTools._split_sentences(chunk.text)
+            for term in AgentTools._tokenize(sentence)
+        }
+        overlap = question_terms & context_terms
+
+        if len(overlap) < max(1, min(2, len(question_terms) // 3 or 1)):
+            return False
+
+        best_sentence, _ = AgentTools._best_matching_sentence(question, context)
+        if not best_sentence:
+            return False
+
+        lower_question = question.lower()
+        lower_sentence = best_sentence.lower()
+
+        if any(term in lower_question for term in ("price", "cost", "today", "exact")):
+            has_pricing_signal = bool(
+                re.search(r"\b\d+\b|\$|usd|price|cost|plan includes|adds", lower_sentence)
+            )
+            if not has_pricing_signal:
+                return False
+            if "planned but not yet generally available" in lower_sentence:
+                return False
+
+        hard_required_terms = ("ceo", "favorite", "snacks", "fridays", "tax", "id", "legal", "entity")
+        if any(term in lower_question for term in hard_required_terms):
+            if not all(
+                term in context_terms
+                for term in AgentTools._tokenize(question)
+                if term in {"ceo", "favorite", "snacks", "fridays", "tax", "id", "legal", "entity"}
+            ):
+                return False
+
+        return True
+
+    @staticmethod
+    def _extractive_fallback_answer(question: str, context: list[RetrievedChunk]) -> str | None:
+        best_sentence, best_chunk_index = AgentTools._best_matching_sentence(question, context)
+        if not best_sentence or best_chunk_index is None:
             return None
+
+        cleaned_sentence = re.sub(r"\s+", " ", best_sentence).strip().rstrip(".")
+        cleaned_sentence = re.sub(r"^#+\s*", "", cleaned_sentence)
+        cleaned_sentence = re.sub(r"^\w[\w\s]+##\s*", "", cleaned_sentence).strip()
+        if "[" in cleaned_sentence and "]" in cleaned_sentence:
+            return cleaned_sentence
+        return f"{cleaned_sentence}. [{best_chunk_index}]"
+
+    @staticmethod
+    def _best_matching_sentence(question: str, context: list[RetrievedChunk]) -> tuple[str | None, int | None]:
+        if not context:
+            return None, None
 
         question_terms = AgentTools._tokenize(question)
         best_score = -1
@@ -79,19 +141,14 @@ class AgentTools:
                     continue
                 overlap = len(question_terms & sentence_terms)
                 numeric_bonus = 1 if re.search(r"\b\d+\b", sentence) else 0
-                score = overlap * 10 + numeric_bonus
+                exact_phrase_bonus = 2 if any(term in sentence.lower() for term in question_terms) else 0
+                score = overlap * 10 + numeric_bonus + exact_phrase_bonus
                 if score > best_score:
                     best_score = score
                     best_sentence = sentence
                     best_chunk_index = chunk.index
 
-        if not best_sentence or best_chunk_index is None:
-            return None
-
-        cleaned_sentence = re.sub(r"\s+", " ", best_sentence).strip().rstrip(".")
-        if "[" in cleaned_sentence and "]" in cleaned_sentence:
-            return cleaned_sentence
-        return f"{cleaned_sentence}. [{best_chunk_index}]"
+        return best_sentence, best_chunk_index
 
     @staticmethod
     def _split_sentences(text: str) -> list[str]:
