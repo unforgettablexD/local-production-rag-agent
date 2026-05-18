@@ -1,0 +1,22 @@
+[
+  {"question":"How many PTO days do full-time employees get in their first three years?","expected_source_document":"hr_policy.md","expected_behavior":"answer"},
+  {"question":"When does PTO accrual increase to 20 days annually?","expected_source_document":"hr_policy.md","expected_behavior":"answer"},
+  {"question":"How many remote work days per week are allowed with manager approval?","expected_source_document":"hr_policy.md","expected_behavior":"answer"},
+  {"question":"What is the deadline to submit medical leave documentation?","expected_source_document":"hr_policy.md","expected_behavior":"answer"},
+  {"question":"Within how many days should employees submit reimbursable expenses?","expected_source_document":"expense_policy.md","expected_behavior":"answer"},
+  {"question":"What is the hotel reimbursement cap per night before tax?","expected_source_document":"expense_policy.md","expected_behavior":"answer"},
+  {"question":"When are receipts required for expenses?","expected_source_document":"expense_policy.md","expected_behavior":"answer"},
+  {"question":"What authentication is required for employees and contractors?","expected_source_document":"security_policy.md","expected_behavior":"answer"},
+  {"question":"How quickly must critical security patches be applied?","expected_source_document":"security_policy.md","expected_behavior":"answer"},
+  {"question":"Can confidential customer data be stored on personal devices?","expected_source_document":"security_policy.md","expected_behavior":"answer"},
+  {"question":"Which integrations are currently supported by the platform?","expected_source_document":"product_faq.md","expected_behavior":"answer"},
+  {"question":"What does the Enterprise plan add beyond the Professional plan?","expected_source_document":"product_faq.md","expected_behavior":"answer"},
+  {"question":"Can customers deploy the product with a local model stack?","expected_source_document":"product_faq.md","expected_behavior":"answer"},
+  {"question":"How soon must an incident commander be assigned for a Severity 1 incident?","expected_source_document":"incident_response_runbook.md","expected_behavior":"answer"},
+  {"question":"How often should stakeholder updates be sent during a Severity 1 incident?","expected_source_document":"incident_response_runbook.md","expected_behavior":"answer"},
+  {"question":"When must the post-incident review be completed?","expected_source_document":"incident_response_runbook.md","expected_behavior":"answer"},
+  {"question":"What is the CEO's favorite operating system?","expected_source_document":null,"expected_behavior":"refuse"},
+  {"question":"What office snacks are provided on Fridays?","expected_source_document":null,"expected_behavior":"refuse"},
+  {"question":"What exact price does the Salesforce integration cost today?","expected_source_document":null,"expected_behavior":"refuse"},
+  {"question":"What is the legal entity tax ID of the company?","expected_source_document":null,"expected_behavior":"refuse"}
+]
