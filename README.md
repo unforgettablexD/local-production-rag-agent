@@ -78,6 +78,7 @@ local-production-rag-agent/
 ### Evaluation
 - Includes 20 evaluation questions across answerable and unanswerable cases.
 - Reports retrieval hit rate, citation presence rate, refusal accuracy, and groundedness rate.
+- Emphasizes safe refusal and evidence-backed answers for local production RAG workflows.
 
 ## Latest Results
 
@@ -107,6 +108,34 @@ What this means:
 - Every answerable response included citations.
 - The agent correctly answered supported questions and refused unsupported ones.
 - The groundedness heuristic marked all outputs as supported by retrieved context.
+
+## Healthcare-Safety Lens
+
+For healthcare-oriented AI teams, generic RAG metrics are helpful but not sufficient. The most important question is whether the system abstains safely when it lacks support and whether every factual response is traceable to evidence.
+
+Recommended healthcare-aligned metrics for this project:
+- `retrieval_hit_rate`: Did retrieval surface the expected supporting document?
+- `citation_correctness_rate`: Did the cited chunk actually support the answer?
+- `unsupported_answer_rate`: How often did the system answer when it should have refused?
+- `refusal_accuracy`: Did the system correctly refuse unsupported or unsafe questions?
+- `evidence_alignment_rate`: Did the answer stay grounded in retrieved context?
+- `human_handoff_recommended_rate`: For sensitive or unsupported cases, did the system abstain or recommend escalation?
+
+How the current repo maps to those concepts:
+- `retrieval_hit_rate` is already reported directly.
+- `refusal_accuracy` is already reported directly.
+- `groundedness_rate` is the current proxy for `evidence_alignment_rate`.
+- `citation_presence_rate` is currently reported; this is weaker than `citation_correctness_rate` but still useful.
+
+What would need explicit recalculation or evaluator extensions:
+- `citation_correctness_rate` would require checking whether the cited chunk actually supports the specific claim, not just whether a citation exists.
+- `unsupported_answer_rate` can be derived from the unanswerable subset but is not currently surfaced as its own headline metric.
+- `human_handoff_recommended_rate` would require introducing an explicit escalation label in the evaluator.
+
+Why this matters for healthcare AI:
+- In healthcare-adjacent workflows, safe abstention is often more important than answer completeness.
+- Evidence traceability is critical for review, clinician oversight, and operational trust.
+- A system that refuses appropriately is safer than one that answers fluently without support.
 
 ### Fast Evaluation Snapshot
 
